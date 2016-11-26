@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
   && !imageViewer.loadFile(commandLineParser.positionalArguments().front())) {
     return -1;
   }
+
   imageViewer.show();
   return app.exec();
 }

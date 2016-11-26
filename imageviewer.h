@@ -58,6 +58,10 @@ class QVBoxLayout;
 class QTabWidget;
 class QPushButton;
 class QSpinBox;
+class QCheckBox;
+class QRadioButton;
+class QSlider;
+class QColor;
 
 class ImageViewer : public QMainWindow{
   Q_OBJECT
@@ -65,22 +69,35 @@ class ImageViewer : public QMainWindow{
 private:
 
   //GUI Objects
-  QWidget* m_option_panel1;
-  QVBoxLayout* m_option_layout1;
 
-  QWidget* m_option_panel2;
-  QVBoxLayout* m_option_layout2;
+  //Tab 1
+  QWidget* t1_panel_1;
+  QVBoxLayout* t1_layout_1;
+  QPushButton* t1_btn_1;
+  QPushButton* t1_btn_2;
+  QCheckBox *t1_cbx_1;
+  QRadioButton *t1_rbn_1;
+  QRadioButton *t1_rbn_2;
+  QRadioButton *t1_rbn_3;
+  QSlider *t1_slr_1;
 
-  QPushButton* button1;
-  QPushButton* button2;
-  QSpinBox* spinbox1;
+  //Tab 2
+  QWidget* t2_panel_1;
+  QVBoxLayout* t2_layout_1;
+  QSpinBox* t2_spx_1;
 
 
 
   private slots:
 
   //SLOTS
-  void applyExampleAlgorithm();
+  void drawBlackLine();
+  void zoomOut3Times();
+  void checkboxClicked();
+  void radioChanged();
+  void sliderMoved();
+
+
 
 
 

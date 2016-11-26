@@ -42,9 +42,11 @@
 #ifndef QT_NO_PRINTER
 #include <QPrintDialog>
 #endif
-#include<iostream>
-
+#include <iostream>
+#include <string>
 #include "imageviewer.h"
+
+
 
 ImageViewer::ImageViewer(){
 
@@ -61,58 +63,126 @@ ImageViewer::ImageViewer(){
 	createMenus();
 
 	resize(QGuiApplication::primaryScreen()->availableSize() * 0.85 );
+
+
 }
 
-void ImageViewer::applyExampleAlgorithm(){
+void ImageViewer::drawBlackLine(){
 	if(image!=NULL){
 		for(int i=0;i<std::min(image->width(),image->height());i++){
-			// macht die Farbe schwarz, bitte recherchieren wie eine andere Farbe gesetzt wird ...
-			image->setPixel(i,i,0);
+			image->setPixel(i,i,qRgba(0,0,0,255));
 		}
 		updateImageDisplay();
-		renewLogging();
 		logFile << "example algorithm applied " << std::endl;
+		renewLogging();
 	}
 }
+void ImageViewer::zoomOut3Times(){
+	zoomOut();
+	zoomOut();
+	zoomOut();
+}
+
+
+void ImageViewer::checkboxClicked(){
+	if (this->t1_cbx_1->isChecked()){
+		logFile << "Test Checkbox now checked" << std::endl;
+	} else {
+		logFile << "Test Checkbox now unchecked" << std::endl;
+	}
+	renewLogging();
+}
+void ImageViewer::radioChanged(){
+	if (this->t1_rbn_1->isChecked()){
+		logFile << "Radio 1 now checked" << std::endl;
+	} else if(this->t1_rbn_2->isChecked()){
+		logFile << "Radio 2 now checked" << std::endl;
+	} else {
+		logFile << "Radio 3 now checked" << std::endl;
+	}
+	renewLogging();
+}
+
+void ImageViewer::sliderMoved(){
+	if(image!=NULL){
+		int x_center = image->width() / 2;
+		int y_center = image->height() / 2;
+		int x_length = image->width() * this->t1_slr_1->value() / 100;
+		int y_length = image->height() * this->t1_slr_1->value() / 100;
+		for(int i = 0; i <= x_length; i++){
+			image->setPixel((x_center - (x_length/2)) + i, y_center, qRgba(255,0,0,255));
+		}
+		for(int i = 0; i <= y_length; i++){
+			image->setPixel(x_center, (y_center - (y_length/2)) + i, qRgba(255,0,0,255));
+		}
+
+		updateImageDisplay();
+	}
+}
+
 
 void ImageViewer::generateControlPanels(){
 	//TAB 1
 	//init GUI
-	m_option_panel1 = new QWidget();
-	m_option_layout1 = new QVBoxLayout();
-	m_option_panel1->setLayout(m_option_layout1);
+	t1_panel_1 = new QWidget();
+	t1_layout_1 = new QVBoxLayout();
+	t1_panel_1->setLayout(t1_layout_1);
 
-	button1 = new QPushButton();
-	button1->setText("Apply axample algorithm");
+	t1_btn_1 = new QPushButton();
+	t1_btn_1->setText("Draw black line");
 
-	button2 = new QPushButton();
-	button2->setText("do something else");
+	t1_btn_2 = new QPushButton();
+	t1_btn_2->setText("Zoom Out");
+
+	t1_cbx_1 = new QCheckBox("TextCheckbox");
+
+	t1_rbn_1 = new QRadioButton("Radio Button 1");
+	t1_rbn_2 = new QRadioButton("Radio Button 2");
+	t1_rbn_3 = new QRadioButton("Radio Button 2");
+	t1_rbn_1->setChecked(true);
+
+	t1_slr_1 = new QSlider(Qt::Horizontal);
+	t1_slr_1->setMinimum(0);
+	t1_slr_1->setMaximum(100);
+	t1_slr_1->setSliderPosition(0);
+
+
 
 	//connect SLOTS
-	QObject::connect(button1, SIGNAL (clicked()), this, SLOT (applyExampleAlgorithm()));
+	QObject::connect(t1_btn_1, SIGNAL (clicked()), this, SLOT (drawBlackLine()));
+	QObject::connect(t1_btn_2, SIGNAL (clicked()), this, SLOT (zoomOut3Times()));
+	QObject::connect(t1_cbx_1, SIGNAL (clicked()), this, SLOT (checkboxClicked()));
+	QObject::connect(t1_rbn_1, SIGNAL (clicked()), this, SLOT (radioChanged()));
+	QObject::connect(t1_rbn_2, SIGNAL (clicked()), this, SLOT (radioChanged()));
+	QObject::connect(t1_rbn_3, SIGNAL (clicked()), this, SLOT (radioChanged()));
+	QObject::connect(t1_slr_1, SIGNAL (valueChanged(int)), this, SLOT (sliderMoved()));
 
 
 	//build GUI
-	m_option_layout1->addWidget(button1);
-	m_option_layout1->addWidget(button2);
-	tabWidget->addTab(m_option_panel1,"Tab 1");
+	t1_layout_1->addWidget(t1_btn_1);
+	t1_layout_1->addWidget(t1_btn_2);
+	t1_layout_1->addWidget(t1_cbx_1);
+	t1_layout_1->addWidget(t1_rbn_1);
+	t1_layout_1->addWidget(t1_rbn_2);
+	t1_layout_1->addWidget(t1_rbn_3);
+	t1_layout_1->addWidget(new QLabel("Draw a red cross:"));
+	t1_layout_1->addWidget(t1_slr_1);
+
 	//end TAB 1
 
 	//TAB 2
 	//init GUI
-	m_option_panel2 = new QWidget();
-	m_option_layout2 = new QVBoxLayout();
-	m_option_panel2->setLayout(m_option_layout2);
+	t2_panel_1 = new QWidget();
+	t2_layout_1 = new QVBoxLayout();
+	t2_panel_1->setLayout(t2_layout_1);
 
-	spinbox1 = new QSpinBox(tabWidget);
+	t2_spx_1 = new QSpinBox();
 
 	//connect SLOTS
 
 	//build GUI
-	m_option_layout2->addWidget(new QLabel("description of parameter etc."));
-	m_option_layout2->addWidget(spinbox1);
-	tabWidget->addTab(m_option_panel2,"Tab 2");
-	tabWidget->show();
+	t2_layout_1->addWidget(new QLabel("description of parameter etc."));
+	t2_layout_1->addWidget(t2_spx_1);
 	//end TAB 2
 
 	//TAB 3
@@ -120,6 +190,13 @@ void ImageViewer::generateControlPanels(){
 	//connect SLOTS
 	//build GUI
 	//end TAB 3
+
+
+
+	//build tabWidget
+	tabWidget->addTab(t1_panel_1,"Tab 1");
+	tabWidget->addTab(t2_panel_1,"Tab 2");
+	tabWidget->show();
 }
 
 void ImageViewer::startLogging(){
